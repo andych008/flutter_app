@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:english_words/english_words.dart';
+import 'package:flutter/services.dart';
 
 void main() => runApp(MyApp());
 
@@ -7,19 +9,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
+//      title: 'Flutter Demo',
+//      theme: ThemeData(
+//        // This is the theme of your application.
+//        //
+//        // Try running your application with "flutter run". You'll see the
+//        // application has a blue toolbar. Then, without quitting the app, try
+//        // changing the primarySwatch below to Colors.green and then invoke
+//        // "hot reload" (press "r" in the console where you ran "flutter run",
+//        // or simply save your changes to "hot reload" in a Flutter IDE).
+//        // Notice that the counter didn't reset back to zero; the application
+//        // is not restarted.
+//        primarySwatch: Colors.teal,
+//      ),
       home: MyHomePage(title: 'Flutter  Demo Home Page'),
     );
   }
@@ -98,6 +100,49 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.display1,
             ),
+            RandomWordsWidget(),
+            FlatButton(
+              child: Text("open dlg1"),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text("Your Title"),
+                      content: const Text("xxx"),
+                      actions: [
+                        FlatButton(
+                          child: const Text("Ok"),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
+            MaterialButton(
+                child: Text("open new route"),
+                onPressed: () {
+                  Navigator.push(context,
+//                      MaterialPageRoute(builder: (context) => NewRoute()));
+//                      MaterialPageRoute(builder: (context) => ImageDemo()));
+                      MaterialPageRoute(builder: (context) => ImageDemo2()));
+                }),
+            MaterialButton(
+                child: Text("open assets"),
+                onPressed: () {
+                  rootBundle.loadString('assets/config.json')
+                      .then((jsonStr) => debugPrint(jsonStr))
+                      .catchError((e) => debugPrint(e));
+
+//                  loadAsset().then((jsonStr) {
+//                    debugPrint(jsonStr);
+//                  })
+//                  .catchError((e) {
+//                    debugPrint(e);
+//                  });
+                })
           ],
         ),
       ),
@@ -108,4 +153,75 @@ class _MyHomePageState extends State<MyHomePage> {
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+}
+
+class NewRoute extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("New route"),
+      ),
+      body: Center(
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text("This is new route"),
+              RandomWordsWidget()
+            ]),
+      ),
+    );
+  }
+}
+
+class RandomWordsWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // 生成随机字符串
+    final wordPair = new WordPair.random();
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: new Text(wordPair.toString()),
+    );
+  }
+}
+
+
+class ImageDemo extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text('从URL地址获取图像'),
+      ),
+      body: new Center(
+        child: new Image.network(
+          'http://pic.baike.soso.com/p/20130828/20130828161137-1346445960.jpg',
+          scale: 2.0,
+        ),
+      ),
+    );
+  }
+}
+
+class ImageDemo2 extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: new AppBar(
+        title: new Text('从asset获取图像'),
+      ),
+      body: new Center(
+        child: new Image.asset(
+          'graphics/flutter.png',
+          scale: 2.0,
+        ),
+      ),
+    );
+  }
+}
+
+
+Future<String> loadAsset() async {
+  return await rootBundle.loadString('assets/config.json');
 }
